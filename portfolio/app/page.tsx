@@ -11,43 +11,51 @@ export default function Home() {
   const [error, setError] = useState(null); // Fehlerhandling
 
   const fetchData = async () => {
-    if (!userInput) return; // Leere Eingaben ignorieren
-
+    if (!userInput) return;
+  
     setLoading(true);
     setError(null);
     setResponseText("");
-
+  
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": `Bearer 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`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: "deepseek/deepseek-r1-distill-llama-70b:free",
-          messages: [
-            {
-              role: "user",
-              content: userInput,
-            },
-          ],
+          messages: [{ role: "user", content: userInput }],
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP-Fehler! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      setResponseText(data.choices?.[0]?.message?.content || "Keine Antwort erhalten.");
+      console.log("🚀 API Response:", data); // 👉 Ausgabe in der Konsole
+  
+      // 🔥 Dynamische Antwortverarbeitung 🔥
+      let message = "Keine Antwort erhalten.";
+      if (data.choices && data.choices.length > 0) {
+        message = data.choices[0].message?.content || message;
+      } else if (data.message) {
+        message = data.message;
+      } else if (data.text) {
+        message = data.text;
+      }
+  
+      setResponseText(message);
     } catch (err) {
       setError("Fehler beim Abrufen der Daten.");
-      console.error("API Fehler:", err);
+      console.error("❌ API Fehler:", err);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8">
