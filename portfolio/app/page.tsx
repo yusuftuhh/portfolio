@@ -9,19 +9,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false); // Ladezustand
  
 
-  const [error, setError] = useState<string | null>(null); // 🔥 Richtiger Typ
+  const [error, setError] = useState<string | null>(null); 
 
   const fetchData = async () => {
     if (!userInput) return;
   
     setLoading(true);
-    setError(null); // ✅ Kein Fehler, weil `null` erlaubt ist.
+    setError(null); 
     setResponseText("");
   
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model: "deepseek/deepseek-r1-distill-llama-70b:free",
           messages: [{ role: "user", content: userInput }],
