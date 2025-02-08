@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Spline from "@splinetool/react-spline";
 
 export default function Home() {
