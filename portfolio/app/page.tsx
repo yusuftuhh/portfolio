@@ -7,13 +7,15 @@ export default function Home() {
   const [userInput, setUserInput] = useState(""); // Eingabefeld für die Frage
   const [responseText, setResponseText] = useState(""); // KI-Antwort
   const [loading, setLoading] = useState(false); // Ladezustand
-  const [error, setError] = useState(null); // Fehlerhandling
+ 
+
+  const [error, setError] = useState<string | null>(null); // 🔥 Richtiger Typ
 
   const fetchData = async () => {
     if (!userInput) return;
   
     setLoading(true);
-    setError(null);
+    setError(null); // ✅ Kein Fehler, weil `null` erlaubt ist.
     setResponseText("");
   
     try {
@@ -33,12 +35,13 @@ export default function Home() {
       const data = await response.json();
       setResponseText(data.choices?.[0]?.message?.content || "Keine Antwort erhalten.");
     } catch (err) {
-      setError("Fehler beim Abrufen der Daten.");
+      setError("Fehler beim Abrufen der Daten."); // ✅ Jetzt erlaubt!
       console.error("API Fehler:", err);
     } finally {
       setLoading(false);
     }
   };
+  
   
   
 
