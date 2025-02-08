@@ -15,7 +15,7 @@ export default function Home() {
     if (!userInput) return;
   
     setLoading(true);
-    setError(null); 
+    setError(null);
     setResponseText("");
   
     try {
@@ -36,14 +36,29 @@ export default function Home() {
       }
   
       const data = await response.json();
-      setResponseText(data.choices?.[0]?.message?.content || "Keine Antwort erhalten.");
+      console.log("🚀 API Response:", data); // 👉 API-Antwort in der Konsole ausgeben
+  
+      // 🛠 Versuche verschiedene mögliche Antwortformate:
+      let message = "Keine Antwort erhalten.";
+      if (data.choices && data.choices.length > 0) {
+        message = data.choices[0].message?.content || message;
+      } else if (data.choices && data.choices.length > 0 && data.choices[0]?.text) {
+        message = data.choices[0].text; // Falls API `text` statt `message.content` nutzt
+      } else if (data.message) {
+        message = data.message;
+      } else if (data.text) {
+        message = data.text;
+      }
+  
+      setResponseText(message);
     } catch (err) {
-      setError("Fehler beim Abrufen der Daten."); // ✅ Jetzt erlaubt!
-      console.error("API Fehler:", err);
+      setError("Fehler beim Abrufen der Daten.");
+      console.error("❌ API Fehler:", err);
     } finally {
       setLoading(false);
     }
   };
+  
   
   
   
