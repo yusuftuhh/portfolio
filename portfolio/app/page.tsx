@@ -17,12 +17,9 @@ export default function Home() {
     setResponseText("");
   
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const response = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "deepseek/deepseek-r1-distill-llama-70b:free",
           messages: [{ role: "user", content: userInput }],
@@ -34,26 +31,15 @@ export default function Home() {
       }
   
       const data = await response.json();
-      console.log("🚀 API Response:", data); // 👉 Ausgabe in der Konsole
-  
-      // 🔥 Dynamische Antwortverarbeitung 🔥
-      let message = "Keine Antwort erhalten.";
-      if (data.choices && data.choices.length > 0) {
-        message = data.choices[0].message?.content || message;
-      } else if (data.message) {
-        message = data.message;
-      } else if (data.text) {
-        message = data.text;
-      }
-  
-      setResponseText(message);
+      setResponseText(data.choices?.[0]?.message?.content || "Keine Antwort erhalten.");
     } catch (err) {
       setError("Fehler beim Abrufen der Daten.");
-      console.error("❌ API Fehler:", err);
+      console.error("API Fehler:", err);
     } finally {
       setLoading(false);
     }
   };
+  
   
 
   return (
