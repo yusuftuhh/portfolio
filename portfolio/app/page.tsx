@@ -75,6 +75,9 @@ export default function Home() {
         setError("Ein unbekannter Fehler ist aufgetreten.");
         console.error("❌ API Fehler (unbekannter Typ):", err);
       }
+
+
+      
     }
     
   };
