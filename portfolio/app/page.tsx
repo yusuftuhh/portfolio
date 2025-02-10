@@ -19,7 +19,7 @@ export default function Home() {
     setResponseText("");
   
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const response = await fetch("google/gemini-2.0-flash-lite-preview-02-05:free", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
