@@ -7,22 +7,20 @@ export default function Home() {
   const [userInput, setUserInput] = useState(""); // Eingabefeld für die Frage
   const [responseText, setResponseText] = useState(""); // KI-Antwort
   const [loading, setLoading] = useState(false); // Ladezustand
- 
-
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
     if (!userInput) return;
-  
+
     setLoading(true);
     setError(null);
     setResponseText("");
-  
+
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}5`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -30,38 +28,52 @@ export default function Home() {
           messages: [{ role: "user", content: userInput }],
         }),
       });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+      console.log("🔄 message:", userInput);
+      console.log("🔄 HTTP-Status:", response.status);
+      console.log("📋 Response-Header:", JSON.stringify([...response.headers]));
+
+      // Response klonen, damit wir ihn mehrfach lesen können
+      const responseClone = response.clone();
+
+      // Erst den rohen Text loggen
+      const rawBody = await responseClone.text();
+      console.log("🚀 Raw Response Body:", rawBody);
+
+      // Falls leer, zeige Hinweis an
+      if (!rawBody) {
+        setError("❌ Kein Response-Body erhalten.");
+        return;
       }
-  
-      const data = await response.json();
-      console.log("🚀 API Response:", data); // 👉 API-Antwort in der Konsole ausgeben
-  
-      // 🛠 Versuche verschiedene mögliche Antwortformate:
+
+      // Versuche den Body als JSON zu parsen
+      let data;
+      try {
+        data = JSON.parse(rawBody);
+        console.log("✅ Parsed JSON:", data);
+      } catch (jsonError) {
+        console.error("❌ Fehler beim JSON-Parsing:", jsonError);
+        setError("Fehler beim Parsen der Antwort.");
+        return;
+      }
+
+      // Antwort extrahieren
       let message = "Keine Antwort erhalten.";
-      if (data.choices && data.choices.length > 0) {
-        message = data.choices[0].message?.content || message;
-      } else if (data.choices && data.choices.length > 0 && data.choices[0]?.text) {
-        message = data.choices[0].text; // Falls API `text` statt `message.content` nutzt
+      if (data.choices?.length > 0) {
+        message = data.choices[0].message?.content || data.choices[0].text || message;
       } else if (data.message) {
         message = data.message;
       } else if (data.text) {
         message = data.text;
       }
-  
+
       setResponseText(message);
     } catch (err) {
-      setError("Fehler beim Abrufen der Daten.");
+      setError(`Fehler beim Abrufen der Daten: ${err.message}`);
       console.error("❌ API Fehler:", err);
     } finally {
       setLoading(false);
     }
   };
-  
-  
-  
-  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8">
