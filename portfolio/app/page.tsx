@@ -19,14 +19,14 @@ export default function Home() {
     setResponseText("");
   
     try {
-      const response = await fetch("google/gemini-2.0-flash-lite-preview-02-05:free", {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "deepseek/deepseek-r1-distill-llama-70b:free",
+          model: "google/gemini-2.0-flash-lite-preview-02-05:free",
           messages: [{ role: "user", content: userInput }],
         }),
       });
