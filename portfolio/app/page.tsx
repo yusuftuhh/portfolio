@@ -68,11 +68,15 @@ export default function Home() {
 
       setResponseText(message);
     } catch (err) {
-      setError(`Fehler beim Abrufen der Daten: ${err.message}`);
-      console.error("❌ API Fehler:", err);
-    } finally {
-      setLoading(false);
+      if (err instanceof Error) {
+        setError(`Fehler beim Abrufen der Daten: ${err.message}`);
+        console.error("❌ API Fehler:", err);
+      } else {
+        setError("Ein unbekannter Fehler ist aufgetreten.");
+        console.error("❌ API Fehler (unbekannter Typ):", err);
+      }
     }
+    
   };
 
   return (
